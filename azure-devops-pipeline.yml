@@ -30,8 +30,11 @@ variables:
 # Storage account to store the tfstate
 - name: stg_name
   value: 'stterraformkprintz'
+# RG name for the storage account to store the tfstate
+- name: stg_rg_name
+  value: 'rg-mgmt'
 # Name of the container to store the tfstate
-- name: container_name
+- name: stg_container_name
   value: 'terraform'
 
 stages:
@@ -69,9 +72,9 @@ stages:
           backendType: azurerm
           backendServiceArm: '$(sc_name)'
           backendAzureRmSubscriptionId: '$(subscription_id)'
-          #backendAzureRmResourceGroupName: 'rg-mgmt'
+          backendAzureRmResourceGroupName: '$(stg_rg_name)'
           backendAzureRmStorageAccountName: '$(stg_name)'
-          backendAzureRmContainerName: '$(container_name)'
+          backendAzureRmContainerName: '$(stg_container_name)'
           backendAzureRmKey: '$(System.TeamProject)/$(Build.Repository.Name).tfstate'
       # Deploy Terraform ressources
       - task: TerraformCLI@0
