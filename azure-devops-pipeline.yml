@@ -27,6 +27,12 @@ variables:
 # Location of the resources
 - name: location
   value: 'canadacentral'
+# Storage account to store the tfstate
+- name: stg_name
+  value: 'stterraformkprintz'
+# Name of the container to store the tfstate
+- name: container_name
+  value: 'terraform'
 
 stages:
 # Register the providers for the subscription
@@ -63,9 +69,9 @@ stages:
           backendType: azurerm
           backendServiceArm: '$(sc_name)'
           backendAzureRmSubscriptionId: '$(subscription_id)'
-          backendAzureRmResourceGroupName: 'rg-mgmt'
-          backendAzureRmStorageAccountName: 'stterraformkprintz'
-          backendAzureRmContainerName: 'terraform'
+          #backendAzureRmResourceGroupName: 'rg-mgmt'
+          backendAzureRmStorageAccountName: '$(stg_name)'
+          backendAzureRmContainerName: '$(container_name)'
           backendAzureRmKey: '$(System.TeamProject)/$(Build.Repository.Name).tfstate'
       # Deploy Terraform ressources
       - task: TerraformCLI@0

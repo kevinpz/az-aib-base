@@ -13,7 +13,3 @@ variable "id_name" {
 variable "gallery_name" {
   type = string
 }
-
-variable "image_name" {
-  type = string
-}
