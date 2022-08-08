@@ -1,0 +1,79 @@
+# Auto trigger when changes on main
+trigger:
+  branches:
+    include:
+      - main
+
+# Use the Microsoft hosted runners
+pool:
+    vmImage: 'ubuntu-latest'
+
+variables:
+# Name of the service connection
+- name: sc_name
+  value: 'sc-mg-coffeetimedev'
+# ID of the subscription
+- name: subscription_id
+  value: 'b34b291e-89b2-4d63-9f9c-1ac3e8f43b4f'
+# RG to create the image builder
+- name: rg_name
+  value: 'rg-image-builder'
+# Name of the user assigned identoty
+- name: id_name
+  value: 'id-image-builder'
+# Name of the compute image gallery
+- name: gallery_name
+  value: 'gallery_coffeetimedev'
+# Location of the resources
+- name: location
+  value: 'canadacentral'
+
+stages:
+# Register the providers for the subscription
+- stage: Prereq
+  jobs:
+  - job: Prereq
+    steps:
+      - task: AzureCLI@2
+        inputs:
+          workingDirectory: prereq
+          azureSubscription: '$(sc_name)'
+          scriptType: 'bash'
+          scriptLocation: 'scriptPath'
+          arguments: '$(subscription_id)'
+          scriptPath: './prereq/register_provider.sh'
+
+# Deploy the base for the Azure Image Builder service
+- stage: Deploy
+  jobs:
+  - job: Deploy
+    steps:
+      # Download Terraform binary
+      - task: TerraformInstaller@0
+        displayName: install terraform
+        inputs:
+          terraformVersion: latest
+      # Init Terraform backend and download providers
+      - task: TerraformCLI@0
+        displayName: 'terraform init'
+        inputs:
+          workingDirectory: terraform
+          command: init
+          # Configure the backend to store the .tfstate file
+          backendType: azurerm
+          backendServiceArm: '$(sc_name)'
+          backendAzureRmSubscriptionId: '$(subscription_id)'
+          backendAzureRmResourceGroupName: 'rg-mgmt'
+          #backendAzureRmResourceGroupLocation: canadacentral'
+          backendAzureRmStorageAccountName: 'stterraformkprintz'
+          backendAzureRmContainerName: 'terraform'
+          backendAzureRmKey: '$(System.TeamProject)/$(Build.Repository.Name).tfstate'
+      # Deploy Terraform ressources
+      - task: TerraformCLI@0
+        displayName: 'terraform apply'
+        inputs:
+          workingDirectory: terraform
+          command: apply
+          environmentServiceName: '$(sc_name)'
+          providerAzureRmSubscriptionId: '$(subscription_id)'
+          commandOptions: '-var "location=$(location)" -var "rg_name=$(rg_name)" -var "id_name=$(id_name)" -var "gallery_name=$(gallery_name)" -var "image_name=$(image_name)"'
