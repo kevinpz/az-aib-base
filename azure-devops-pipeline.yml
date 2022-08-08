@@ -5,8 +5,8 @@ resources:
     endpoint: Azure
     name: kevinpz/az-aib-common
 
-extends:
-  template: common-variables.yml
+# extends:
+#   template: common-variables.yml
 
 # Auto trigger when changes on main
 trigger:
