@@ -3,7 +3,7 @@ resources:
   - repository: az-aib-common # The name used to reference this repository in the checkout step
     type: github
     endpoint: Azure
-    name: kevinpz/az-aib-common
+    name: kevinpz/az-aib-common@az-aib-common
 
 variables:
 - template: common-variables.yml
