@@ -1,18 +1,24 @@
-resources:
-  repositories:
-  - repository: az-aib-common # The name used to reference this repository in the checkout step
-    type: github
-    endpoint: Azure
-    name: kevinpz/az-aib-common
-
-variables:
-- template: common-variables.yml@az-aib-common
-
 # Auto trigger when changes on main
 trigger:
   branches:
     include:
       - main
+
+# Use the Microsoft hosted runners
+pool:
+    vmImage: 'ubuntu-latest'
+
+# Load the common variables repo
+resources:
+  repositories:
+  - repository: az-aib-common
+    type: github
+    endpoint: Azure
+    name: kevinpz/az-aib-common
+
+# Source the variables
+variables:
+- template: common-variables.yml@az-aib-common
 
 stages:
 # Register the providers for the subscription
