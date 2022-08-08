@@ -64,7 +64,6 @@ stages:
           backendServiceArm: '$(sc_name)'
           backendAzureRmSubscriptionId: '$(subscription_id)'
           backendAzureRmResourceGroupName: 'rg-mgmt'
-          #backendAzureRmResourceGroupLocation: canadacentral'
           backendAzureRmStorageAccountName: 'stterraformkprintz'
           backendAzureRmContainerName: 'terraform'
           backendAzureRmKey: '$(System.TeamProject)/$(Build.Repository.Name).tfstate'
